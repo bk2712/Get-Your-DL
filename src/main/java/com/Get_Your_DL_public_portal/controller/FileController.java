@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 
 @RestController
@@ -38,5 +40,10 @@ public class FileController {
     @GetMapping("/get/{docId}")
     public ResponseEntity<Resource> previewFile(@PathVariable Long docId) throws IOException {
         return documentService.getFileById(docId);
+    }
+
+    @PostMapping("/report/orderReciept/generate")
+    public  ResponseEntity<byte[]> generateOrderReciept(@RequestBody Map<String, String> payload){
+        return documentService.generateOrderReciept(payload);
     }
 }

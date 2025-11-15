@@ -42,7 +42,7 @@ public class LicenseDetail {
     @JsonRawValue
     @JsonDeserialize(using = RawJsonToString.class)
     private String otherInfo;
-    @Column(name = "created_at")
+    @Column(name = "created_at", insertable = false, updatable = false)
     private Timestamp createdAt;
     @Column(name = "created_by", nullable = false)
     private String createdBy;

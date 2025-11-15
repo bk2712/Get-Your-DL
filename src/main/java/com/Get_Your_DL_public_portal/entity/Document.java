@@ -26,6 +26,8 @@ public class Document {
     private String fileType;
     @Column(name = "user_id")
     private UUID userId;
+    @Column(name = "license_id")
+    private UUID licenseId;
     @Column(name = "path")
     private String filePath;
 

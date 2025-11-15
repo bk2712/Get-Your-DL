@@ -51,7 +51,8 @@ public class RegisterLoginServiceImpl implements RegisterLoginService {
         if(userDets.getEmail().matches(EMAIL_REGEX) && (userDets.getPhone() == null || userDets.getPhone().matches(PHONE_REGEX)) && userDets.getPassword().matches(userDets.getConfirmPassword())){
             String hashedPassword = encoder.encode(userDets.getPassword());
             userDets.setPassword(hashedPassword);
-            UserDetail savedUser= regLogRepo.save(userDets);
+            LOG.info("User Register phone:: {}", userDets.getPhone());
+            UserDetail savedUser = regLogRepo.save(userDets);
             UUID generatedId = savedUser.getId();
             AuthenticationResponse response = authentication.register(userDets, generatedId);
             return ResponseEntity.ok(response);

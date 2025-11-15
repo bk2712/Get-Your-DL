@@ -1,7 +1,16 @@
 package com.Get_Your_DL_public_portal.service;
 
+import com.Get_Your_DL_public_portal.dto.DL_UserDets;
+import com.Get_Your_DL_public_portal.entity.ApplyForLicense;
 import com.Get_Your_DL_public_portal.entity.Document;
+import com.Get_Your_DL_public_portal.entity.LicenseDetail;
+import com.Get_Your_DL_public_portal.entity.UserDetail;
+import com.Get_Your_DL_public_portal.repository.ApplyForLicenseRepo;
 import com.Get_Your_DL_public_portal.repository.DocumentRepo;
+import com.Get_Your_DL_public_portal.repository.UserDetailsRepo;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +27,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -35,6 +48,12 @@ public class DocumentService {
 
     @Autowired
     MyProfileServiceImpl myProfileService;
+
+    @Autowired
+    ApplyForLicenseRepo applyForLicenseRepo;
+
+    @Autowired
+    UserDetailsRepo userDetailsRepo;
 
     private static final Logger LOG = LoggerFactory.getLogger(DocumentService.class);
 
@@ -115,5 +134,37 @@ public class DocumentService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to fetch document", e);
         }
+    }
+
+    public ResponseEntity<byte[]> generateOrderReciept(Map<String, String> payload) {
+        LicenseDetail licenseDets= applyForLicenseRepo.getById(UUID.fromString(payload.get("applicationId")));
+
+        UserDetail user= userDetailsRepo.getReferenceById(UUID.fromString(licenseDets.getCreatedBy()));
+        DL_UserDets users= new DL_UserDets(licenseDets, user);
+        Map<String, Object> params = new HashMap<>();
+        params.put("firstname", users.getUserDetail().getFirstname());
+        params.put("lastname", users.getUserDetail().getLastname());
+        params.put("address", users.getUserDetail().getAddress());
+        params.put("city", users.getUserDetail().getCity());
+        params.put("state", users.getUserDetail().getState());
+        params.put("zip", String.valueOf(users.getUserDetail().getZip()));
+        params.put("phone", users.getUserDetail().getPhone());
+        Timestamp createdAt = users.getLicenseDetail().getCreatedAt();
+        String createdAtStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(createdAt);
+        params.put("createdAt", createdAtStr);
+        try(var inputStream= new ClassPathResource("reports/orderReciept.jrxml").getInputStream()) {
+            var report= JasperCompileManager.compileReport(inputStream);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
+            byte[] bytes= JasperExportManager.exportReportToPdf(jasperPrint);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(bytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (JRException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 }

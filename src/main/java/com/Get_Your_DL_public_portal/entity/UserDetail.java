@@ -25,37 +25,37 @@ import java.util.UUID;
 public class UserDetail implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    public UUID id;
+    private UUID id;
 
     @Column(name = "staff_id")
-    public Integer staffId;
+    private Integer staffId;
     @Column(name = "firstname", nullable = false)
-    public String firstname;
+    private String firstname;
     @Column(name = "lastname", nullable = false)
-    public String lastname;
+    private String lastname;
     @Column(name = "address")
-    public String address;
+    private String address;
     @Column(name = "city")
-    public String city;
+    private String city;
     @Column(name = "state")
-    public String state;
+    private String state;
     @Column(name = "zip")
-    public Integer zip;
+    private Integer zip;
     @Enumerated(value= EnumType.STRING)
     @Column(name = "role")
-    public Role role;
+    private Role role;
     @Column(name = "email", nullable = false, unique = true)
-    public String email;
+    private String email;
     @Column(name = "phone")
-    public String phone;
+    private String phone;
     @Column(name = "password", nullable = false)
-    public String password;
+    private String password;
     @Transient
     private String confirmPassword;
-    public Timestamp createdAt;
-    public String createdBy;
-    public Timestamp updated_at;
-    public String updatedBy;
+    private Timestamp createdAt;
+    private String createdBy;
+    private Timestamp updated_at;
+    private String updatedBy;
     @Column(name = "dob")
     private String dob;
     @Column(name = "spouse_name")

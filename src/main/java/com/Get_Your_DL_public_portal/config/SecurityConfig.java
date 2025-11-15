@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // makes STATEless apis, server do not store client information
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/user/**", "/api/v1/my-profile/**").permitAll()
-                        .requestMatchers("/users/fill-details", "/api/v1/my-profile", "/api/v1/my-profile/**", "/api/v1/files/upload", "/api/v1/files/get/**").authenticated()
+                        .requestMatchers("/users/**", "/api/v1/my-profile", "/api/v1/my-profile/**", "/api/v1/files/**").authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

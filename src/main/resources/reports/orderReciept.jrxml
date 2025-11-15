@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+                                  http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="OrderReceipt"
+              pageWidth="595" pageHeight="842" columnWidth="555"
+              leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+
+    <!-- ========================================================= -->
+    <!-- FIELDS MAPPED TO JAVA BEAN (DL_UserDets)                 -->
+    <!-- ========================================================= -->
+    <parameter name="firstname" class="java.lang.String"/>
+    <parameter name="lastname" class="java.lang.String"/>
+    <parameter name="address" class="java.lang.String"/>
+    <parameter name="city" class="java.lang.String"/>
+    <parameter name="state" class="java.lang.String"/>
+    <parameter name="zip" class="java.lang.String"/>
+    <parameter name="phone" class="java.lang.String"/>
+    <parameter name="createdAt" class="java.lang.String"/>
+
+    <!-- ========================================================= -->
+    <!-- TITLE SECTION                                             -->
+    <!-- ========================================================= -->
+    <title>
+        <band height="260">
+
+            <!-- HEADER IMAGE -->
+            <image>
+                <reportElement x="0" y="0" width="120" height="60"/>
+                <imageExpression><![CDATA["classpath:images/driving-license-banner.png"]]></imageExpression>
+            </image>
+
+            <!-- Header Text -->
+            <staticText>
+                <reportElement x="130" y="10" width="350" height="20"/>
+                <text><![CDATA[Digital GET YOUR DL]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="130" y="30" width="350" height="20"/>
+                <text><![CDATA[Driving License Authority]]></text>
+            </staticText>
+
+            <!-- Name -->
+            <staticText>
+                <reportElement x="0" y="75" width="150" height="20"/>
+                <text><![CDATA[Name:]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="150" y="75" width="350" height="20"/>
+                <textFieldExpression><![CDATA[$P{firstname} + " " + $P{lastname}]]></textFieldExpression>
+            </textField>
+
+            <!-- Remittance ID -->
+            <staticText>
+                <reportElement x="0" y="100" width="150" height="15"/>
+                <text><![CDATA[Remittance ID:]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="150" y="100" width="350" height="15"/>
+                <textFieldExpression><![CDATA["7LuGxMnTOtQzPB920251112_091424"]]></textFieldExpression>
+            </textField>
+
+            <!-- Address -->
+            <staticText>
+                <reportElement x="0" y="125" width="150" height="15"/>
+                <text><![CDATA[Address:]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="150" y="125" width="380" height="15"/>
+                <textFieldExpression><![CDATA[$P{address} + ", " + $P{city} + ", " + $P{state} + " " + $P{zip}]]></textFieldExpression>
+            </textField>
+
+            <!-- Paid By -->
+            <staticText>
+                <reportElement x="400" y="145" width="120" height="15"/>
+                <text><![CDATA[Paid By: Credit Card]]></text>
+            </staticText>
+
+            <!-- Title -->
+            <staticText>
+                <reportElement x="0" y="170" width="200" height="20"/>
+                <text><![CDATA[Order Receipt]]></text>
+            </staticText>
+
+            <!-- Phone -->
+            <staticText>
+                <reportElement x="0" y="200" width="150" height="15"/>
+                <text><![CDATA[Phone No.:]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="150" y="200" width="200" height="15"/>
+                <textFieldExpression><![CDATA[$P{phone}]]></textFieldExpression>
+            </textField>
+
+            <!-- Created At -->
+            <staticText>
+                <reportElement x="0" y="220" width="150" height="15"/>
+                <text><![CDATA[Request Submitted On:]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="150" y="220" width="200" height="15"/>
+                <textFieldExpression><![CDATA[$P{createdAt}]]></textFieldExpression>
+            </textField>
+
+        </band>
+    </title>
+
+</jasperReport>

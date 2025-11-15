@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -74,5 +75,11 @@ public class ApplyForDLServiceImpl implements ApplyForDLService{
         );
         if(updatedCol == 1) return ResponseEntity.ok("Details updates successfully!");
         return ResponseEntity.status(400).body("Something went wrong!");
+    }
+
+    @Override
+    public List<LicenseDetail> fetchLicenseDetailsForUser(UUID userId) {
+        return applyRepo.getByCreatedBy(String.valueOf(userId));
+
     }
 }
