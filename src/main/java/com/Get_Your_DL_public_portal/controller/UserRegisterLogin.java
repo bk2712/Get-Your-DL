@@ -52,4 +52,8 @@ public class UserRegisterLogin {
     }
 
 
+    @GetMapping("/verify-user")
+    public ResponseEntity<?> verifyUserForReg(@RequestParam String token){
+        return regLogService.verifyUserForReg(token);
+    }
 }

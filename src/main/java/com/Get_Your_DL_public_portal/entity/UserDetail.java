@@ -48,13 +48,17 @@ public class UserDetail implements UserDetails {
     private String email;
     @Column(name = "phone")
     private String phone;
+    @Column(name = "is_enabled", nullable = false)
+    private boolean enabled = false;
     @Column(name = "password", nullable = false)
     private String password;
     @Transient
     private String confirmPassword;
+    @Column(name = "created_at", insertable = false, updatable = false)
     private Timestamp createdAt;
-    private String createdBy;
+    @Column(name = "updated_at", insertable = false)
     private Timestamp updated_at;
+    @Column(name = "updated_by")
     private String updatedBy;
     @Column(name = "dob")
     private String dob;
@@ -103,6 +107,6 @@ public class UserDetail implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return this.enabled;
     }
 }

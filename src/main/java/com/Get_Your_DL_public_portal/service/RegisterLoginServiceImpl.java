@@ -1,10 +1,14 @@
 package com.Get_Your_DL_public_portal.service;
 
 import com.Get_Your_DL_public_portal.entity.AuthenticationResponse;
+import com.Get_Your_DL_public_portal.entity.EmailVerification;
 import com.Get_Your_DL_public_portal.entity.ResetPassword;
 import com.Get_Your_DL_public_portal.entity.UserDetail;
+import com.Get_Your_DL_public_portal.repository.EmailVerificationRepo;
 import com.Get_Your_DL_public_portal.repository.ResetPasswordRepo;
 import com.Get_Your_DL_public_portal.repository.UserDetailsRepo;
+import com.Get_Your_DL_public_portal.util.EmailTemplateLoader;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
@@ -37,6 +43,12 @@ public class RegisterLoginServiceImpl implements RegisterLoginService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    EmailVerificationRepo emvRepo;
+
+    @Autowired
+    EmailTemplateLoader emailTemplateLoader;
+
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -55,9 +67,22 @@ public class RegisterLoginServiceImpl implements RegisterLoginService {
             UserDetail savedUser = regLogRepo.save(userDets);
             UUID generatedId = savedUser.getId();
             AuthenticationResponse response = authentication.register(userDets, generatedId);
-            return ResponseEntity.ok(response);
+            EmailVerification emv= new EmailVerification();
+            emv.setUserId(generatedId);
+            emv.setToken(response.getToken());
+            emv.setExpireAt(Timestamp.valueOf(LocalDateTime.now(ZoneOffset.UTC).plusHours(24)));
+            emvRepo.save(emv);
+            String link = "http://localhost:8080/api/v1/user/verify-user?token=" + response.getToken();
+            sendVerificationEmail(savedUser.getEmail(), savedUser.getFirstname(), link);
+            return ResponseEntity.ok("Registration successful! Please check your email to verify your account.");
         }
         return ResponseEntity.status(400).body("Something went wrong!");
+    }
+
+    private void sendVerificationEmail(String email, String firstname, String link) {
+        String subject = "Verify your email - Get Your DL Portal";
+        String htmlContent = emailTemplateLoader.loadVerificationTemplate(firstname, link);
+        sendEmail.sendHtmlEmailToUsers(subject, htmlContent, email);
     }
 
     @Override
@@ -65,13 +90,17 @@ public class RegisterLoginServiceImpl implements RegisterLoginService {
         LOG.info("Login intitated");
         if(regLogRepo.findIfUserExists(userDets.getEmail())){
             UserDetail usd= regLogRepo.findByEmail(userDets.getEmail());
+            LOG.info("User allwoed: {} for:: {}", usd.isEnabled(), usd.getEmail());
+            if (!usd.isEnabled()) {
+                return ResponseEntity.status(403).body("Please verify your email before logging in.");
+            }
             LOG.info("Please find the user by email: {}", usd);
             String email= userDets.getEmail();
             String password= userDets.getPassword();
 
 //            UserDetail usd= regLogRepo.findByEmailAndPassword(email, password);
             LOG.info("User login is initiated : {}", usd);
-            if(usd != null && passwordEncoder.matches(password, usd.getPassword())) {
+            if(passwordEncoder.matches(password, usd.getPassword())) {
                 AuthenticationResponse response = authentication.authenticate(usd);
                 return ResponseEntity.ok(response);
             }
@@ -125,6 +154,28 @@ public class RegisterLoginServiceImpl implements RegisterLoginService {
         Integer updatedRows= regLogRepo.updateUserPswrd(newPswrd, email);
         if (updatedRows != 0) return ResponseEntity.ok("Password is updated successfully!");
         return ResponseEntity.status(400).body("Password is updated successfully!");
+    }
+
+    @Override
+    public ResponseEntity<?> verifyUserForReg(String token) {
+        EmailVerification evt = emvRepo.findByToken(token);
+
+        if (evt.isUsed()) {
+            return ResponseEntity.badRequest().body("Token already used");
+        }
+
+        if (evt.getExpireAt().before(Timestamp.valueOf(LocalDateTime.now(ZoneOffset.UTC)))) {
+            return ResponseEntity.badRequest().body("Token expired");
+        }
+
+        evt.setUsed(true);
+        emvRepo.save(evt);
+
+        UserDetail user = regLogRepo.findById(evt.getUserId()).get();
+        user.setEnabled(true);
+        regLogRepo.save(user);
+
+        return ResponseEntity.ok("Email verified successfully! You may now login.");
     }
 
 

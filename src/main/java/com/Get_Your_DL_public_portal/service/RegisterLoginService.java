@@ -14,4 +14,6 @@ public interface RegisterLoginService {
     public ResponseEntity<?> verifyOtp(String email, ResetPassword otp);
 
     ResponseEntity<?> resetPassword(String email, UserDetail details);
+
+    ResponseEntity<?> verifyUserForReg(String token);
 }
