@@ -37,8 +37,9 @@ public class SecurityConfig {
                 .cors(cors -> {})  // Enable global Spring CORS configuration
                 .csrf(AbstractHttpConfigurer::disable) // makes STATEless apis, server do not store client information
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/user/**", "/api/v1/my-profile/**").permitAll()
-                        .requestMatchers("/users/**", "/api/v1/my-profile", "/api/v1/my-profile/**", "/api/v1/files/**").authenticated()
+                        .requestMatchers("/api/v1/user/**").permitAll()
+                        .requestMatchers("/api/v1/my-profile/logout").authenticated()
+                        .requestMatchers("/users/**", "/api/v1/my-profile/**", "/api/v1/files/**").authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

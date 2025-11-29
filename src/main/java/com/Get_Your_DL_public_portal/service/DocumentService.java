@@ -57,7 +57,7 @@ public class DocumentService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DocumentService.class);
 
-    private static final String FOLDER_PATH= "C:/Users/Bhavesh Kaushik/Documents/GetYourDLDocs/";
+    private static final String FOLDER_PATH= "C:/Get_your_dl_docs/";
 
     public ResponseEntity<?> saveFile(MultipartFile file, String fileType) throws IOException {
         String filePath= FOLDER_PATH+file.getOriginalFilename();
