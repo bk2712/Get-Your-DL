@@ -4,8 +4,10 @@ import com.Get_Your_DL_public_portal.dto.DL_UserDets;
 import com.Get_Your_DL_public_portal.entity.ResetPassword;
 import com.Get_Your_DL_public_portal.entity.UserDetail;
 import com.Get_Your_DL_public_portal.service.ApplyForDLService;
+import com.Get_Your_DL_public_portal.service.JwtTokenService;
 import com.Get_Your_DL_public_portal.service.RegisterLoginService;
 import com.Get_Your_DL_public_portal.service.UserAuthenticationImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class UserRegisterLogin {
 
     @Autowired
     ApplyForDLService applyForDLService;
+
+    @Autowired
+    JwtTokenService tokenService;
 
     private static final Logger LOG = LoggerFactory.getLogger(UserRegisterLogin.class);
 
@@ -55,5 +60,15 @@ public class UserRegisterLogin {
     @GetMapping("/verify-user")
     public ResponseEntity<?> verifyUserForReg(@RequestParam String token){
         return regLogService.verifyUserForReg(token);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            String token = header.substring(7);
+            tokenService.invalidateToken(token);
+        }
+        return ResponseEntity.ok("Logged out successfully.");
     }
 }

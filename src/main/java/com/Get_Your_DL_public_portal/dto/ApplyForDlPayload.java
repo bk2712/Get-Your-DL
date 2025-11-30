@@ -11,7 +11,8 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DL_UserDets {
+public class ApplyForDlPayload {
     private LicenseDetail licenseDetail;
     private UserDetail userDetail;
+    private Map<String, Integer> fileIds;
 }

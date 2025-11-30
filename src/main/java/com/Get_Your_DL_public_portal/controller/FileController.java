@@ -23,8 +23,7 @@ public class FileController {
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("type") String fileType) throws IOException {
-        ResponseEntity<?> saved = documentService.saveFile(file, fileType);
-        return ResponseEntity.ok("File has been uploaded successfully!");
+        return documentService.saveFile(file, fileType);
     }
 
     @GetMapping("/get")

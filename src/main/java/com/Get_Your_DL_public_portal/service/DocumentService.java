@@ -76,12 +76,17 @@ public class DocumentService {
         doc.setUserId(fetchedUserId);
         file.transferTo(new File(filePath));
         Document previousDoc= docRepo.findByFileType(fileType, fetchedUserId);
+        int fileId;
         if(previousDoc != null){
             // update details;
+            fileId= previousDoc.getId().intValue();
             docRepo.update(doc.getFileMimeType(), doc.getFileName(), doc.getFilePath(), previousDoc.getId().intValue());
         }
-        else docRepo.save(doc);
-        return ResponseEntity.ok("File is uploaded successfully!");
+        else {
+            Document savedFile= docRepo.save(doc);
+            fileId= savedFile.getId().intValue();
+        }
+        return ResponseEntity.status(200).body(fileId);
     }
 
     public byte[][] getFile() throws IOException{

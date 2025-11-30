@@ -1,5 +1,6 @@
 package com.Get_Your_DL_public_portal.controller;
 
+import com.Get_Your_DL_public_portal.dto.ApplyForDlPayload;
 import com.Get_Your_DL_public_portal.dto.DL_UserDets;
 import com.Get_Your_DL_public_portal.entity.LicenseDetail;
 import com.Get_Your_DL_public_portal.service.ApplyForDLService;
@@ -32,7 +33,7 @@ public class ApplyForUserDl {
     @PostMapping(value = "/fill-details",     // the second segment here
             consumes = "application/json",
             produces = "application/json")
-    public ResponseEntity<?> uploadDets(@RequestBody DL_UserDets dlUserDets){
+    public ResponseEntity<?> uploadDets(@RequestBody ApplyForDlPayload dlUserDets){
 //        return ResponseEntity.ok("My bad");
         LOG.info("fill details api is executed: {}", dlUserDets);
         return applyForDLService.saveDLDets(dlUserDets);

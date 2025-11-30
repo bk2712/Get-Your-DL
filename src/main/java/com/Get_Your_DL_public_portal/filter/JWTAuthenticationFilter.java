@@ -1,6 +1,7 @@
 package com.Get_Your_DL_public_portal.filter;
 
 import com.Get_Your_DL_public_portal.service.JwtServiceImpl;
+import com.Get_Your_DL_public_portal.service.JwtTokenService;
 import com.Get_Your_DL_public_portal.service.UserServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,6 +26,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     UserServiceImpl userDetsService;
 
+    @Autowired
+    JwtTokenService tokenService;
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
@@ -35,6 +39,10 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
+            if (tokenService.isTokenBlacklisted(token)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token invalidated");
+                return;
+            }
             String username = jwtService.extractUsername(token); // returns sub (email)
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetsService.loadUserByUsername(username);
